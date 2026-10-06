@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff8d8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>The Daily Buzz</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #34372c;
+      --honey: #e5b83f;
+      --deep-honey: #c89922;
+      --cream: #fff5d6;
+      --petal: #fffdf6;
+      --leaf: #64815c;
+      --muted: #77796e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      position: relative;
+      min-height: 100vh;
+      margin: 0;
+      padding: max(18px, env(safe-area-inset-top)) 18px max(24px, env(safe-area-inset-bottom));
+      background:
+        radial-gradient(ellipse at 7% 8%, #ffeaa9 0, #ffeaa900 25rem),
+        radial-gradient(ellipse at 96% 88%, #f4e6b3 0, #f4e6b300 27rem),
+        linear-gradient(145deg, #fff9e8 0%, #fff4d2 52%, #f8f0d8 100%);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body::before,
+    body::after {
+      position: fixed;
+      z-index: 0;
+      pointer-events: none;
+      opacity: .13;
+      font-size: clamp(110px, 24vw, 190px);
+      line-height: 1;
+    }
+
+    body::before {
+      content: "🌻";
+      top: 18%;
+      left: -52px;
+      transform: rotate(-16deg);
+    }
+
+    body::after {
+      content: "🌻";
+      right: -58px;
+      bottom: 4%;
+      transform: rotate(14deg);
+    }
+
+    button, input { font: inherit; }
+    button { -webkit-tap-highlight-color: transparent; }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 520px);
+      margin: 0 auto;
+    }
+
+    header { text-align: center; }
+
+    .flower {
+      display: inline-grid;
+      width: 62px;
+      height: 62px;
+      margin: 4px auto 8px;
+      place-items: center;
+      border-radius: 50%;
+      background: #f6e8b7;
+      font-size: 37px;
+    }
+
+    h1 {
+      margin: 4px 0 3px;
+      font-size: clamp(29px, 7vw, 36px);
+      letter-spacing: -1px;
+    }
+
+    .subtitle { margin: 0; color: var(--muted); font-size: 15px; }
+
+    .date-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 22px 0 14px;
+      padding: 14px 16px;
+      border: 1px solid #e8e5d8;
+      border-radius: 15px;
+      background: #fffefa;
+    }
+
+    .date-label { color: var(--muted); font-size: 11px; font-weight: 750; letter-spacing: 1px; }
+    .date-value { margin-top: 4px; font-size: 17px; font-weight: 700; }
+    .bee { font-size: 28px; }
+
+    .add-card {
+      padding: 16px;
+      border: 1px solid #e8e5d8;
+      border-radius: 17px;
+      background: #fffefa;
+    }
+
+    label { display: block; margin-bottom: 9px; font-size: 16px; font-weight: 700; }
+
+    .entry-row { display: flex; gap: 9px; }
+
+    input {
+      min-width: 0;
+      flex: 1;
+      padding: 12px 13px;
+      border: 1px solid #d9d7cb;
+      border-radius: 12px;
+      outline: none;
+      background: white;
+      color: var(--ink);
+      font-size: 17px;
+    }
+
+    input:focus { border-color: var(--deep-honey); box-shadow: 0 0 0 3px #e5b83f35; }
+
+    .add-button, .voice-button {
+      min-height: 48px;
+      border: 0;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .add-button {
+      padding: 0 18px;
+      background: #e6bd55;
+      color: #34372c;
+    }
+
+    .voice-button {
+      width: 100%;
+      margin-top: 11px;
+      background: #f3efdf;
+      color: #4f513f;
+      font-size: 15px;
+    }
+
+    .voice-button:active, .add-button:active { transform: translateY(1px); }
+    .voice-button[aria-pressed="true"] { background: #f3e2dc; color: #80463a; }
+
+    .list-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin: 26px 3px 10px;
+    }
+
+    h2 { margin: 0; font-size: 20px; }
+    .count { color: var(--muted); font-size: 14px; }
+
+    .task-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .task {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 58px;
+      padding: 11px 12px;
+      border: 1px solid #e8e5d8;
+      border-radius: 14px;
+      background: var(--petal);
+    }
+
+    .task-enter { transform-origin: center top; }
+    .task-flower { flex: 0 0 auto; font-size: 21px; line-height: 1; }
+    .task-bee-flight {
+      position: absolute;
+      z-index: 1;
+      top: 50%;
+      left: 10px;
+      pointer-events: none;
+      font-size: 20px;
+      line-height: 1;
+      animation: bee-to-flower 760ms ease-in-out both;
+    }
+
+    .task-check {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 30px;
+      place-items: center;
+      border: 2px solid #d2b75c;
+      border-radius: 50%;
+      background: white;
+      color: white;
+      cursor: pointer;
+    }
+
+    .task-check[aria-checked="true"] { border-color: var(--leaf); background: var(--leaf); }
+    .task-text { flex: 1; overflow-wrap: anywhere; font-size: 17px; line-height: 1.35; }
+    .task.done .task-text { color: #89816d; text-decoration: line-through; }
+
+    .delete-button {
+      width: 38px;
+      height: 38px;
+      flex: 0 0 38px;
+      border: 0;
+      border-radius: 12px;
+      background: #f5eeea;
+      color: #76594c;
+      font-size: 21px;
+      cursor: pointer;
+    }
+
+    .empty {
+      padding: 24px 16px;
+      border: 1px dashed #d7d2bd;
+      border-radius: 14px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .empty strong { display: block; margin-bottom: 4px; color: var(--ink); font-size: 17px; }
+    .clear-button {
+      display: block;
+      margin: 15px auto 0;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: #5e604e;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .notice {
+      min-height: 22px;
+      margin: 10px 4px 0;
+      color: #5e604e;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    footer { margin-top: 21px; color: var(--muted); font-size: 13px; text-align: center; }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .task-enter { animation: bloom-in 420ms cubic-bezier(.2, .8, .2, 1) both; }
+      .task-enter .task-flower { animation: flower-bounce 550ms ease-out both; }
+      @keyframes bloom-in {
+        0% { opacity: 0; transform: translateY(10px) scale(.96); }
+        70% { opacity: 1; transform: translateY(-2px) scale(1.01); }
+        100% { transform: translateY(0) scale(1); }
+      }
+      @keyframes flower-bounce {
+        0% { transform: scale(.5) rotate(-25deg); }
+        60% { transform: scale(1.25) rotate(12deg); }
+        100% { transform: scale(1) rotate(0); }
+      }
+      @keyframes bee-to-flower {
+        0% { opacity: 0; transform: translate(0, -50%) scale(.7); }
+        12% { opacity: 1; }
+        38% { transform: translate(16px, -105%) rotate(-12deg); }
+        75% { transform: translate(39px, -85%) rotate(10deg); }
+        100% { opacity: 0; transform: translate(43px, -50%) scale(.55); }
+      }
+    }
+  </style>
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Daily Buzz">
+  <meta name="application-name" content="Daily Buzz">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <style>
+    html { min-height: 100%; background: #fff8d8; }
+    body {
+      min-height: 100dvh;
+      overscroll-behavior-y: none;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+    input { -webkit-user-select: text; user-select: text; }
+    button, input { touch-action: manipulation; }
+    .app { padding-bottom: env(safe-area-inset-bottom); }
+  </style>
+
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="flower" aria-hidden="true">🌻</div>
+      <h1>The Daily Buzz</h1>
+      <p class="subtitle">Bee focused. Let your day bloom.</p>
+    </header>
+
+    <section class="date-card" aria-label="Today's date">
+      <div>
+        <div class="date-label">TODAY</div>
+        <div class="date-value" id="today-date"></div>
+      </div>
+      <span class="bee" aria-hidden="true">🐝</span>
+    </section>
+
+    <section class="add-card" aria-label="Add a task">
+      <label for="task-input">What do you need to do?</label>
+      <div class="entry-row">
+        <input id="task-input" type="text" maxlength="120" placeholder="Type a task here..." autocomplete="off">
+        <button class="add-button" id="add-button" type="button">Add</button>
+      </div>
+      <button class="voice-button" id="voice-button" type="button" aria-pressed="false">🎙️ &nbsp; Say a task</button>
+      <p class="notice" id="notice" role="status" aria-live="polite"></p>
+    </section>
+
+    <section aria-label="Your tasks">
+      <div class="list-heading">
+        <h2>My tasks</h2>
+        <span class="count" id="task-count"></span>
+      </div>
+      <ul class="task-list" id="task-list"></ul>
+      <button class="clear-button" id="clear-button" type="button" hidden>Clear finished tasks</button>
+    </section>
+
+    <footer>Make room for what matters. 🌼</footer>
+  </main>
+
+  <script>
+    (() => {
+      const start = () => {
+      const input = document.querySelector("#task-input");
+      const list = document.querySelector("#task-list");
+      const count = document.querySelector("#task-count");
+      const notice = document.querySelector("#notice");
+      const voiceButton = document.querySelector("#voice-button");
+      const clearButton = document.querySelector("#clear-button");
+      const date = new Date();
+      const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+      const storageKey = `sunny-bee-tasks-${dateKey}`;
+      const recognitionType = window.SpeechRecognition || window.webkitSpeechRecognition;
+      let recognition = null;
+      let listening = false;
+      let newestTask = null;
+      let celebratingTask = null;
+      let tasks = loadTasks();
+
+      document.querySelector("#today-date").textContent = date.toLocaleDateString(undefined, {
+        weekday: "long", month: "long", day: "numeric"
+      });
+
+      function loadTasks() {
+        try {
+          const saved = localStorage.getItem(storageKey);
+          const parsed = saved ? JSON.parse(saved) : [];
+          return Array.isArray(parsed)
+            ? parsed.filter(task => task && typeof task.text === "string" && typeof task.done === "boolean")
+            : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveTasks() {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(tasks));
+        } catch (error) {
+          // The app still works when browser storage is unavailable.
+        }
+        return true;
+      }
+
+      function render() {
+        list.replaceChildren();
+        const unfinished = tasks.filter(task => !task.done).length;
+        count.textContent = unfinished === 1 ? "1 left to do" : `${unfinished} left to do`;
+        clearButton.hidden = !tasks.some(task => task.done);
+
+        if (tasks.length === 0) {
+          const empty = document.createElement("li");
+          empty.className = "empty";
+          empty.innerHTML = "<strong>Your list is ready to bloom!</strong>Add your first task above.";
+          list.append(empty);
+          return;
+        }
+
+        tasks.forEach((task, index) => {
+          const item = document.createElement("li");
+          item.className = `task${task.done ? " done" : ""}${task === newestTask ? " task-enter" : ""}`;
+
+          const check = document.createElement("button");
+          check.className = "task-check";
+          check.type = "button";
+          check.setAttribute("role", "checkbox");
+          check.setAttribute("aria-checked", String(task.done));
+          check.setAttribute("aria-label", `${task.done ? "Mark not done" : "Mark done"}: ${task.text}`);
+          check.textContent = task.done ? "✓" : "";
+          check.addEventListener("click", () => {
+            const completing = !tasks[index].done;
+            tasks[index].done = completing;
+            celebratingTask = completing &&
+              window.matchMedia("(prefers-reduced-motion: no-preference)").matches
+              ? tasks[index]
+              : null;
+            saveTasks();
+            render();
+            celebratingTask = null;
+          });
+
+          const flower = document.createElement("span");
+          flower.className = "task-flower";
+          flower.setAttribute("aria-hidden", "true");
+          flower.textContent = "🌻";
+
+          if (task === celebratingTask) {
+            const bee = document.createElement("span");
+            bee.className = "task-bee-flight";
+            bee.setAttribute("aria-hidden", "true");
+            bee.textContent = "🐝";
+            item.append(bee);
+          }
+
+          const text = document.createElement("span");
+          text.className = "task-text";
+          text.textContent = task.text;
+
+          const remove = document.createElement("button");
+          remove.className = "delete-button";
+          remove.type = "button";
+          remove.textContent = "×";
+          remove.setAttribute("aria-label", `Delete: ${task.text}`);
+          remove.addEventListener("click", () => {
+            tasks.splice(index, 1);
+            saveTasks();
+            render();
+          });
+
+          item.append(check, flower, text, remove);
+          list.append(item);
+        });
+      }
+
+      function addTask(rawText) {
+        const text = rawText.trim();
+        if (!text) {
+          notice.textContent = "Type or say a task first.";
+          input.focus();
+          return false;
+        }
+        newestTask = { text, done: false };
+        tasks.push(newestTask);
+        saveTasks();
+        render();
+        newestTask = null;
+        notice.textContent = `Added: ${text}`;
+        input.value = "";
+        return true;
+      }
+
+      document.querySelector("#add-button").addEventListener("click", () => addTask(input.value));
+      input.addEventListener("keydown", event => {
+        if (event.key === "Enter") addTask(input.value);
+      });
+
+      clearButton.addEventListener("click", () => {
+        tasks = tasks.filter(task => !task.done);
+        saveTasks();
+        render();
+        notice.textContent = "Finished tasks cleared.";
+      });
+
+      if (recognitionType) {
+        recognition = new recognitionType();
+        recognition.lang = navigator.language || "en-US";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        recognition.onresult = event => {
+          const spokenText = event.results[0][0].transcript;
+          addTask(spokenText);
+        };
+        recognition.onerror = event => {
+          const messages = {
+            "not-allowed": "Please allow microphone access, then try again.",
+            "service-not-allowed": "Voice typing isn't allowed here. You can type your task instead.",
+            "no-speech": "I didn't hear anything. Try again or type your task."
+          };
+          notice.textContent = messages[event.error] || "Voice typing didn't work. Please try again or type your task.";
+        };
+        recognition.onend = () => {
+          listening = false;
+          voiceButton.setAttribute("aria-pressed", "false");
+          voiceButton.textContent = "🎙️  Say a task";
+        };
+      } else {
+        voiceButton.addEventListener("click", () => {
+          notice.textContent = "Voice typing isn't available in this browser. Tap the box to type, or use your iPhone keyboard's microphone.";
+          input.focus();
+        });
+      }
+
+      if (recognition) {
+        voiceButton.addEventListener("click", () => {
+          if (listening) {
+            recognition.stop();
+            return;
+          }
+          notice.textContent = "Listening... Say one task.";
+          try {
+            recognition.start();
+            listening = true;
+            voiceButton.setAttribute("aria-pressed", "true");
+            voiceButton.textContent = "⏹️  Stop listening";
+          } catch (error) {
+            notice.textContent = "Voice typing couldn't start. Please try again or type your task.";
+          }
+        });
+      }
+
+      render();
+      };
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", start);
+      } else {
+        start();
+      }
+    })();
+  </script>
+
+<script>
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => {});
+  });
+}
+</script>
+
+</body>
+</html>
